@@ -1,136 +1,171 @@
-# Hadoop Installation on Windows (Single Node Setup)
+# NAME : DASHVIN
+# REG : 212224100008
 
-> **Prerequisite:** Hadoop requires **Java 1.8** installed on your system.
+# Linear-Regression
 
-## 1. Check Java Version 
-```bash
-java -version
-```
-If Java is not installed, download JDK 1.8:
-https://www.oracle.com/java/technologies/javase/javase-jdk8-downloads.html
+## a) Stock Market Prediction using Linear Regression
 
-Install to:
-C:\Java\jdk1.8.0_181
+## Aim
 
-## 2. Download Hadoop
-Download Hadoop 3.1.x:
-https://hadoop.apache.org/releases.html
+To build a machine learning model using Linear Regression to predict future stock closing prices based on historical stock market data containing Open, High, Low, and Volume values.
 
-Extract to:
-C:\hadoop-3.1.3  
-Rename to:
-C:\hadoop
+## Algorithm
 
-## 3. Set Environment Variables
-Add user variable:
-HADOOP_HOME = C:\hadoop
+Import required libraries: Pandas, NumPy, Matplotlib, Scikit-learn.
 
-Add to PATH:
-%HADOOP_HOME%\bin  
-C:\Java\jdk1.8.0_181\bin
+Load Dataset (stock_data_big.csv) using Pandas.
 
-## 4. Configure Hadoop
-Edit files in:
-C:\hadoop\etc\hadoop
+Explore Dataset by displaying the first few rows.
 
-### core-site.xml
-```xml
-<configuration>
-   <property>
-       <name>fs.defaultFS</name>
-       <value>hdfs://localhost:9000</value>
-   </property>
-</configuration>
-```
+Select Features (X) such as Open, High, Low, Volume and Target (y) as Close price.
 
-### mapred-site.xml
-```xml
-<configuration>
-   <property>
-       <name>mapreduce.framework.name</name>
-       <value>yarn</value>
-   </property>
-</configuration>
-```
+Split the dataset into training and testing sets (80% train, 20% test).
 
-### Create Data Folders
-```
-C:\hadoop\data\namenode
-C:\hadoop\data\datanode
-```
+Create the Linear Regression model and train it using the training set.
 
-### hdfs-site.xml
-```xml
-<configuration>
-   <property>
-       <name>dfs.replication</name>
-       <value>1</value>
-   </property>
-   <property>
-       <name>dfs.namenode.name.dir</name>
-       <value>C:\hadoop\data\namenode</value>
-   </property>
-   <property>
-       <name>dfs.datanode.data.dir</name>
-       <value>C:\hadoop\data\datanode</value>
-   </property>
-</configuration>
+Predict the closing prices for the test dataset.
+
+Evaluate the model using Mean Squared Error (MSE) and R² Score.
+
+Visualize the Actual vs Predicted stock closing prices using Matplotlib.
+
+Interpret results to understand prediction accuracy.
+
+```Python
+from google.colab import files
+uploaded = files.upload()
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error, r2_score
+
+data = pd.read_csv("stock_data_big.csv")
+
+print(data.head())
+
+X = data[["Open", "High", "Low", "Volume"]]
+y = data["Close"]
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+model = LinearRegression()
+model.fit(X_train, y_train)
+
+predictions = model.predict(X_test)
+
+print("\nMean Squared Error:", mean_squared_error(y_test, predictions))
+print("R2 Score:", r2_score(y_test, predictions))
+
+plt.figure(figsize=(8,5))
+plt.plot(y_test.values[:50], label='Actual Prices', color='blue')
+plt.plot(predictions[:50], label='Predicted Prices', color='red')
+plt.title("Stock Price Prediction (Actual vs Predicted)")
+plt.xlabel("Time")
+plt.ylabel("Stock Close Price")
+plt.legend()
+plt.show()
 ```
 
-### yarn-site.xml
-```xml
-<configuration>
-   <property>
-       <name>yarn.nodemanager.aux-services</name>
-       <value>mapreduce_shuffle</value>
-   </property>
-   <property>
-       <name>yarn.nodemanager.auxservices.mapreduce.shuffle.class</name>
-       <value>org.apache.hadoop.mapred.ShuffleHandler</value>
-   </property>
-</configuration>
+### Output:
+
+<img width="686" height="184" alt="image" src="https://github.com/user-attachments/assets/5d57a1d9-1b1c-45e0-9553-15e83fafc055" />
+
+
+<img width="577" height="162" alt="image" src="https://github.com/user-attachments/assets/5a528491-4c68-406a-9401-100db2027333" />
+
+
+<img width="517" height="140" alt="image" src="https://github.com/user-attachments/assets/eb5b3a8c-630e-42bd-8a25-0dde6b19ddab" />
+
+
+<img width="1074" height="683" alt="image" src="https://github.com/user-attachments/assets/427684df-e264-4dbd-ac24-8e58154ec185" />
+
+
+### Output:
+
+machine learning model using Linear Regression to predict future stock closing prices based on historical stock market data containing Open, High, Low, and Volume values is performed.
+
+
+
+## b) Real-Time Sentiment Analysis of Tweets / Reviews
+
+## Aim
+
+To perform real-time sentiment analysis on user-provided tweets or text reviews using TextBlob and classify them into Positive, Negative, or Neutral categories.
+
+## Algorithm
+
+Import libraries: Pandas, TextBlob, and Matplotlib.
+
+Load the dataset (tweets_big.csv) containing tweet/review text.
+
+Define a sentiment function using TextBlob to compute the polarity of each text:
+
+Polarity > 0 → Positive
+
+Polarity < 0 → Negative
+
+Polarity = 0 → Neutral
+
+Apply the function to each tweet/review and store the sentiment category.
+
+Count the occurrences of each sentiment type.
+
+Display sentiment count results in the console.
+
+Visualize the distribution of sentiments using a bar chart.
+
+Show sample outputs to verify classification accuracy.
+
+
+```Python
+
+from google.colab import files
+uploaded = files.upload()
+import pandas as pd
+from textblob import TextBlob
+import matplotlib.pyplot as plt
+
+data = pd.read_csv("tweets_big.csv")
+
+def get_sentiment(text):
+    analysis = TextBlob(str(text))
+    if analysis.sentiment.polarity > 0:
+        return "Positive"
+    elif analysis.sentiment.polarity < 0:
+        return "Negative"
+    else:
+        return "Neutral"
+
+
+data["Sentiment"] = data["text"].apply(get_sentiment)
+
+sentiment_counts = data["Sentiment"].value_counts()
+print(sentiment_counts)
+
+plt.figure(figsize=(6,4))
+sentiment_counts.plot(kind='bar', color=['green','red','gray'])
+plt.title("Sentiment Analysis Results")
+plt.xlabel("Sentiment Type")
+plt.ylabel("Number of Tweets/Reviews")
+plt.show()
+
+print("\nSample Results:")
+print(data[["text", "Sentiment"]].head())
 ```
+### Output:
 
-### hadoop-env.cmd
-```
-set JAVA_HOME=C:\Java\jdk1.8.0_181
-```
+<img width="792" height="103" alt="image" src="https://github.com/user-attachments/assets/2b5a683f-5bb7-4a08-8106-1b9301b09c3a" />
 
-## 5. Add Windows Hadoop Binaries
-Download winutils:
-https://github.com/s911415/apache-hadoop-3.1.3-winutils
 
-Replace:
-C:\hadoop\bin
+<img width="786" height="282" alt="image" src="https://github.com/user-attachments/assets/75b7e745-42ea-4aef-9147-b0ef7fdf0ab8" />
 
-## 6. Verify Installation
-```bash
-hadoop version
-```
 
-## 7. Format NameNode
-```bash
-hdfs namenode -format
-```
+<img width="890" height="794" alt="image" src="https://github.com/user-attachments/assets/d3dc087a-b69e-4d87-9281-17f0a7098403" />
 
-## 8. Start Hadoop Services
-### Start HDFS
-```bash
-cd C:\hadoop\sbin
-start-dfs.cmd
-```
 
-### Start YARN
-```bash
-cd C:\hadoop\sbin
-start-yarn.cmd
-```
+### Result:
 
-## 9. Access Web UIs
-Resource Manager:
-http://localhost:8088/cluster
+ real-time sentiment analysis on user-provided tweets or text reviews using TextBlob and classify them into Positive, Negative, or Neutral categories performed.
 
-NameNode:
-http://localhost:9870/dfshealth.html#tab-overview
-
-## ✔ Hadoop Installed Successfully
