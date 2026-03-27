@@ -1,5 +1,5 @@
-# NAME : DASHVIN
-# REG : 212224100008
+# NAME : SHARAN KUMAR G
+# REG : 212224100055
 
 # Linear-Regression
 
